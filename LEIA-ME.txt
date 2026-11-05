@@ -1,20 +1,271 @@
-GRAVIDADE ZERO - V14 FUNCIONAL LIMPO
+================================================================
+  GRAVIDADE ZERO — GDD (Game Design Document) — Versão 1.0
+================================================================
+Equipe: Cauê Pereira, Maicon Mendes e Matheus Correia de Oliveira
+Disciplina: PAC — Projeto de Aplicação Computacional — 2025
+================================================================
 
-Versão corrigida com mapa simples, completo e eficiente.
+----------------------------------------------------------------
+1. IDENTIFICAÇÃO E PROPOSTA
+----------------------------------------------------------------
+Nome: Gravidade Zero
+Gênero: Plataforma 2D com desafios matemáticos
+Engine: Godot Engine 4.6.1 (GDScript)
+Resolução: 1280 x 720
+Plataforma: Windows (PC), teclado
 
-Fluxo do jogo:
-1. Coletar cartão azul.
-2. Usar Terminal A para abrir a Porta A.
-3. Coletar 3 células amarelas.
-4. Usar o gerador para ligar a energia.
-5. Entrar no setor de segurança.
-6. Usar Terminal B para desligar o laser.
-7. Passar pelo laser desligado e pegar o código roxo.
-8. Usar Terminal C para liberar a saída.
-9. Entrar na saída e apertar E.
+Proposta:
+Gravidade Zero é um jogo ambientado no espaço no qual o jogador
+controla um astronauta preso numa estação espacial avariada.
+Para escapar, é necessário explorar os setores da estação,
+coletar recursos, administrar o oxigênio disponível e resolver
+equações matemáticas que desbloqueiam as passagens entre setores.
 
-Correção principal:
-- O laser agora fica depois do Terminal B.
-- Ele não bloqueia a porta de energia.
-- As únicas colisões internas são barreiras visíveis: Porta A, Sem Energia e Laser.
-- Todo o piso desenhado é caminhável. Não existe parede invisível no caminho.
+O principal diferencial é integrar a matemática à progressão
+do jogo, tornando o raciocínio lógico parte essencial da
+aventura.
+
+----------------------------------------------------------------
+2. HISTÓRIA E UNIVERSO
+----------------------------------------------------------------
+A estação espacial GZ-01 sofreu uma falha crítica de energia.
+O astronauta — único tripulante consciente a bordo — precisa
+percorrer os setores danificados, restaurar a energia principal,
+desligar os sistemas de segurança automatizados (laser) e
+encontrar o código de escape antes que o oxigênio acabe.
+
+Personagem principal: astronauta com traje presurizado completo,
+tanque de O2 nas costas e capacete com visor.
+
+----------------------------------------------------------------
+3. PÚBLICO-ALVO
+----------------------------------------------------------------
+Estudantes do ensino fundamental e médio com interesse em jogos
+digitais e que estejam aprendendo álgebra básica. O jogo busca
+tornar a resolução de equações uma atividade integrada ao
+entretenimento, sem ser didático de forma forçada.
+
+Perfil típico:
+- Idade: 12 a 18 anos
+- Familiaridade com jogos de plataforma (WASD/setas)
+- Conhecimento básico de equações de 1º grau
+
+----------------------------------------------------------------
+4. MECÂNICAS PRINCIPAIS
+----------------------------------------------------------------
+
+4.1 MOVIMENTAÇÃO
+- WASD ou setas direcionais: mover o astronauta
+- Shift (segurar): correr — consome energia do traje
+- A energia do traje se regenera automaticamente ao andar ou parar
+
+4.2 INTERAÇÃO
+- E: interagir com terminais, gerador e saída
+- O jogador vê o prompt "[ E ] Interagir" ao se aproximar
+  de qualquer objeto interativo
+
+4.3 OXIGÊNIO
+- O O2 diminui continuamente (0,55 por segundo)
+- Zonas de radiação (área vermelha com ⚠) drenam 9 O2/segundo
+- Cilindros de oxigênio verdes restauram +35 O2
+- O O2 fica pausado enquanto um terminal está aberto
+- O2 abaixo de 25%: alarme visual (vinheta vermelha pulsante
+  nas bordas) e batida de coração sonora
+- O2 = 0: derrota imediata
+
+4.4 PUZZLES MATEMÁTICOS
+Cada terminal apresenta uma equação de álgebra com 3 opções.
+O jogador pressiona 1, 2 ou 3 para responder.
+Resposta errada: -8 O2 e -5 pontos.
+Não há limite de tentativas.
+
+  Terminal A | x + 2 = 5   | resposta: x = 3 (opção 3)
+  Terminal B | 3x = 12     | resposta: x = 4 (opção 1)
+  Terminal C | 2x + 4 = 10 | resposta: x = 3 (opção 2)
+
+4.5 ITENS COLETÁVEIS
+- Cartão de acesso (azul): necessário para usar o Terminal A
+- Baterias de energia (amarelas): 3 unidades para ligar o gerador
+- Cilindros de O2 (verdes): recuperam oxigênio
+- Chip de código (roxo): necessário para usar o Terminal C
+
+As posições das baterias, cilindros e chip são ALEATÓRIAS
+a cada partida, dentro das zonas de cada setor.
+
+4.6 PONTUAÇÃO
+  Coletar cartão          +20 pts
+  Coletar bateria         +15 pts
+  Coletar cilindro O2     +10 pts
+  Resolver Terminal A     +50 pts
+  Ligar gerador           +60 pts
+  Resolver Terminal B     +70 pts
+  Coletar código          +30 pts
+  Resolver Terminal C     +80 pts
+  Escapar pela saída      +100 pts
+  Resposta errada          -5 pts
+
+----------------------------------------------------------------
+5. FLUXO DE JOGO (8 ETAPAS)
+----------------------------------------------------------------
+
+  1. Coletar o cartão azul (sala inicial)
+  2. Resolver Terminal A → Porta A abre
+  3. Coletar as 3 baterias no setor de energia
+  4. Usar o Gerador → energia restaurada, barreira removida
+  5. Resolver Terminal B → laser desligado
+  6. Coletar o chip de código roxo
+  7. Resolver Terminal C → saída liberada
+  8. Entrar na saída e pressionar E → vitória
+
+O marcador "OBJ" amarelo indica sempre o próximo objetivo.
+A missão atual é exibida no HUD superior esquerdo.
+
+----------------------------------------------------------------
+6. MAPA E SETORES
+----------------------------------------------------------------
+
+[SALA INICIAL] → [SETOR DE ENERGIA] → [SETOR SEGURANÇA] → [SAÍDA]
+
+Cada setor possui cor de piso distinta para fácil identificação:
+  Sala inicial:     azul escuro
+  Setor energia:    verde escuro
+  Setor segurança:  roxo escuro
+  Código/saída:     vermelho escuro
+
+Divisórias entre setores são PAREDES SÓLIDAS OPACAS com placas
+metálicas, faixas de aviso e LEDs pulsantes. Não é possível ver
+nem atravessar para o próximo setor sem resolver o puzzle.
+
+Zona de radiação: área vermelha com símbolo ⚠ no setor de
+segurança. Evitar ou atravessar rapidamente.
+
+----------------------------------------------------------------
+7. INTERFACE (UI/UX)
+----------------------------------------------------------------
+
+HUD superior esquerdo:
+  - Nome do jogo
+  - Missão atual (passo X/8)
+  - Controles resumidos
+
+HUD superior direito:
+  - Pontuação
+  - Tempo de jogo
+  - Barra de O2 (verde) com percentual
+  - Barra de energia do traje (amarela)
+  - Status: cartão, células coletadas, energia
+
+Mensagens contextuais:
+  - Aparecem na base da tela para orientar o jogador
+  - Desaparecem automaticamente após alguns segundos
+
+Prompt de interação:
+  - "[ E ] Interagir" aparece ao se aproximar de objetos
+
+Alerta de O2 crítico:
+  - Vinheta vermelha pulsante nas bordas da tela
+  - Batida de coração sonora que acelera conforme O2 cai
+
+----------------------------------------------------------------
+8. IDENTIDADE VISUAL
+----------------------------------------------------------------
+
+Paleta de cores principal:
+  #03060f — fundo espacial (preto profundo)
+  #28d7ff — ciano (interface, objetos interativos)
+  #28e070 — verde (O2, energia positiva)
+  #ff2857 — vermelho (perigo, radiação, dano)
+  #ffd84a — amarelo (energia, baterias)
+  #b563ff — roxo (código de escape)
+
+Elementos visuais:
+  - Estrelas animadas com twinkle no fundo
+  - Nebulosa colorida animada
+  - Planeta decorativo com anel no canto superior direito
+  - Faíscas elétricas em pontos danificados da estação
+  - Fumaça/vapor saindo de tubulações
+  - Alarmes de parede piscantes nas divisórias bloqueadas
+  - Pools de luz coloridos no piso por setor
+
+Personagem:
+  - Astronauta desenhado com traje completo
+  - Tanque de O2 nas costas com indicador de nível
+  - Capacete com visor, reflexos e antena piscante
+  - Animação de idle (flutuação suave), caminhada e corrida
+  - Anel vermelho ao redor do capacete quando O2 crítico
+
+----------------------------------------------------------------
+9. ACESSIBILIDADE
+----------------------------------------------------------------
+
+  - Textos com tamanho mínimo de 13px e alto contraste
+  - Informações nunca dependem apenas de cor (ícones + texto)
+  - Prompt visual "[ E ] Interagir" ao se aproximar de objetos
+  - Marcador OBJ sempre visível indicando o próximo passo
+  - Missão atual descrita por texto no HUD
+  - O2 pausado durante puzzles para reduzir pressão
+  - Mensagens de erro com dica para o puzzle
+
+----------------------------------------------------------------
+10. CONDIÇÕES DE VITÓRIA E DERROTA
+----------------------------------------------------------------
+
+  Vitória:  entrar na saída com E após liberar todos os acessos
+  Derrota:  oxigênio chegar a zero
+
+Em ambos os casos é exibida a pontuação final, o tempo e as
+opções de reiniciar (R/Enter) ou voltar ao menu (M).
+
+----------------------------------------------------------------
+11. CONTROLES COMPLETOS
+----------------------------------------------------------------
+
+  WASD / Setas    Mover
+  Shift           Correr
+  E               Interagir
+  1 / 2 / 3       Responder equação
+  P / ESC         Pausar
+  M               Voltar ao menu (na pausa ou fim de jogo)
+  R / Enter       Reiniciar (na tela de fim de jogo)
+  ESC             Sair do jogo (no menu principal)
+
+----------------------------------------------------------------
+12. LIMITAÇÕES CONHECIDAS (VERSÃO 1.0)
+----------------------------------------------------------------
+
+  - Apenas 1 fase disponível (vertical slice)
+  - Sem sistema de save
+  - Sem suporte a gamepad
+  - Resolução fixa em 1280x720
+  - Equações são fixas entre partidas (posições dos itens
+    são aleatórias, mas as equações não mudam)
+  - Sons gerados sinteticamente por código; podem não
+    funcionar em alguns computadores dependendo da
+    configuração de áudio do Godot
+  - Sem tela de configurações (volume, resolução, etc.)
+
+----------------------------------------------------------------
+13. FICHA TÉCNICA
+----------------------------------------------------------------
+
+  Nome:           Gravidade Zero
+  Versão:         1.0
+  Data:           Novembro de 2025
+  Engine:         Godot Engine 4.6.1 stable
+  Linguagem:      GDScript
+  Plataforma:     Windows (PC)
+  Resolução:      1280 x 720
+  Controles:      Teclado
+  Gênero:         Plataforma 2D / Puzzle matemático
+  Classificação:  Livre
+
+  Equipe:
+    Cauê Pereira               — Desenvolvimento
+    Maicon Mendes              — Desenvolvimento
+    Matheus Correia de Oliveira — Desenvolvimento
+
+  Engine:  Godot Engine (MIT License) — godotengine.org
+
+================================================================
+  Repositório: https://github.com/cauepereira/gravidade-zero
+================================================================
